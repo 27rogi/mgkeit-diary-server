@@ -1,23 +1,28 @@
-import { Schedule } from './schedules.schema';
-import { Lesson } from './lessons.schema';
+import { Schedule, Lesson } from './schedules.schema';
 import { User } from './users.schema';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
+import * as pagination from 'mongoose-paginate-v2';
 import { deleteArtifacts } from 'src/utils/transform';
+import { Subject } from './subjects.schema';
 
-export type ReplacementDocument = Replacement & Document;
+export type ReplacementDocument = Replacement & mongoose.Document;
 
 @Schema()
 export class Replacement {
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Lesson', required: true })
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Lesson',
+    required: true,
+  })
   lesson: Lesson;
 
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Schedule',
+    ref: 'Subject',
     required: true,
   })
-  schedule: Schedule;
+  subject: Subject;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true })
   teacher: User;
@@ -32,5 +37,7 @@ ReplacementSchema.set('toJSON', {
   virtuals: true,
   transform: (doc, ret) => deleteArtifacts('replacementId', doc, ret),
 });
+
+ReplacementSchema.plugin(pagination);
 
 export { ReplacementSchema };

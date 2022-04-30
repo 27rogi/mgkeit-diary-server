@@ -1,6 +1,6 @@
 import * as Joi from 'joi';
 
-export const homeworkValidations = {
+export const subjectValidations = {
   get: {
     params: Joi.object().keys({
       id: Joi.string()

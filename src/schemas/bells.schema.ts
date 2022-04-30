@@ -1,7 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { deleteArtifacts } from 'src/utils/transform';
+import * as pagination from 'mongoose-paginate-v2';
+import mongoose from 'mongoose';
 
-export type BellDocument = Bell & Document;
+export type BellDocument = Bell & mongoose.Document;
 
 @Schema()
 export class Bell {
@@ -18,5 +20,7 @@ BellSchema.set('toJSON', {
   virtuals: true,
   transform: (doc, ret) => deleteArtifacts('bellId', doc, ret),
 });
+
+BellSchema.plugin(pagination);
 
 export { BellSchema };

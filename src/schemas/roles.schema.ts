@@ -1,7 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import mongoose from 'mongoose';
 import { deleteArtifacts } from 'src/utils/transform';
 
-export type RoleDocument = Role & Document;
+export type RoleDocument = Role & mongoose.Document;
 
 @Schema()
 export class Role {

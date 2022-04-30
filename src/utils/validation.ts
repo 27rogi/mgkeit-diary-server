@@ -17,7 +17,9 @@ export class JoiValidationPipe implements PipeTransform {
   constructor(private schema: RequestObjectSchema) {}
 
   transform(value: any, metadata: ArgumentMetadata) {
-    const { error } = this.schema[metadata.type]
+    let type: string = metadata.type;
+    if (type === 'param') type = 'params';
+    const { error } = this.schema[type]
       .prefs({ errors: { label: 'key' }, abortEarly: false })
       .validate(value);
     if (error) {

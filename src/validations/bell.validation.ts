@@ -1,9 +1,11 @@
 import * as Joi from 'joi';
-import moment from 'moment';
+import * as moment from 'moment';
 
 const checkTime = (value, helpers) => {
-  if (moment(value, 'HH:mm').isValid()) return helpers.error('any.invalid');
-  return value;
+  if (!moment(value, 'HH:mm', true).isValid()) {
+    return helpers.error('any.invalid');
+  }
+  return moment(value, 'HH:mm').format('HH:mm');
 };
 
 export const bellValidations = {

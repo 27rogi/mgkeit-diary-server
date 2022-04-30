@@ -4,7 +4,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
 import { deleteArtifacts } from 'src/utils/transform';
 
-export type UserDocument = User & Document;
+export type UserDocument = User & mongoose.Document;
 
 @Schema()
 export class User {
@@ -23,7 +23,7 @@ export class User {
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Role', required: true })
   role: Role;
 
-  @Prop({ required: true })
+  @Prop({ required: true, select: false })
   password: string;
 }
 

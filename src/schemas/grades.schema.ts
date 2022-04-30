@@ -1,10 +1,11 @@
-import { Lesson } from './lessons.schema';
 import { User } from './users.schema';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
+import * as pagination from 'mongoose-paginate-v2';
 import { deleteArtifacts } from 'src/utils/transform';
+import { Lesson } from './schedules.schema';
 
-export type GradeDocument = Grade & Document;
+export type GradeDocument = Grade & mongoose.Document;
 
 @Schema()
 export class Grade {
@@ -33,5 +34,7 @@ GradeSchema.set('toJSON', {
   virtuals: true,
   transform: (doc, ret) => deleteArtifacts('gradeId', doc, ret),
 });
+
+GradeSchema.plugin(pagination);
 
 export { GradeSchema };

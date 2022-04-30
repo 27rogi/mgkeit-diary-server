@@ -1,4 +1,12 @@
 import * as Joi from 'joi';
+import * as moment from 'moment';
+
+const weekStartDate = (value, helpers) => {
+  if (!moment(value).isValid()) {
+    return helpers.error('any.invalid');
+  }
+  return moment(value).startOf('isoWeek');
+};
 
 export const scheduleValidations = {
   get: {
@@ -6,6 +14,9 @@ export const scheduleValidations = {
       id: Joi.string()
         .regex(/^[a-f\d]{24}$/i)
         .required(),
+    }),
+    query: Joi.object().keys({
+      detailed: Joi.bool(),
     }),
   },
   getAll: {
@@ -17,10 +28,30 @@ export const scheduleValidations = {
   },
   create: {
     body: Joi.object().keys({
-      lessons: Joi.array()
-        .items(Joi.string().regex(/^[a-f\d]{24}$/i))
+      days: Joi.array()
+        .items(
+          Joi.object().keys({
+            lessons: Joi.array().items(
+              Joi.object().keys({
+                subject: Joi.string()
+                  .regex(/^[a-f\d]{24}$/i)
+                  .required(),
+                bell: Joi.string()
+                  .regex(/^[a-f\d]{24}$/i)
+                  .required(),
+                teacher: Joi.string()
+                  .regex(/^[a-f\d]{24}$/i)
+                  .required(),
+                location: Joi.string()
+                  .regex(/^[a-f\d]{24}$/i)
+                  .required(),
+              }),
+            ),
+            day: Joi.number().min(1).max(7),
+          }),
+        )
         .required(),
-      weekDate: Joi.date().required(),
+      weekDate: Joi.date().custom(weekStartDate).required(),
       group: Joi.string()
         .regex(/^[a-f\d]{24}$/i)
         .required(),
@@ -33,8 +64,30 @@ export const scheduleValidations = {
         .required(),
     }),
     body: Joi.object().keys({
-      lessons: Joi.array().items(Joi.string().regex(/^[a-f\d]{24}$/i)),
-      weekDate: Joi.date(),
+      days: Joi.array()
+        .items(
+          Joi.object().keys({
+            lessons: Joi.array().items(
+              Joi.object().keys({
+                subject: Joi.string()
+                  .regex(/^[a-f\d]{24}$/i)
+                  .required(),
+                bell: Joi.string()
+                  .regex(/^[a-f\d]{24}$/i)
+                  .required(),
+                teacher: Joi.string()
+                  .regex(/^[a-f\d]{24}$/i)
+                  .required(),
+                location: Joi.string()
+                  .regex(/^[a-f\d]{24}$/i)
+                  .required(),
+              }),
+            ),
+            day: Joi.number().min(1).max(7),
+          }),
+        )
+        .required(),
+      weekDate: Joi.date().custom(weekStartDate),
       group: Joi.string().regex(/^[a-f\d]{24}$/i),
     }),
   },

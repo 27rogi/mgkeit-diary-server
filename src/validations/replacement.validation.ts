@@ -20,7 +20,7 @@ export const replacementValidations = {
       lesson: Joi.string()
         .regex(/^[a-f\d]{24}$/i)
         .required(),
-      schedule: Joi.string()
+      subject: Joi.string()
         .regex(/^[a-f\d]{24}$/i)
         .required(),
       teacher: Joi.string()
@@ -37,7 +37,7 @@ export const replacementValidations = {
     }),
     body: Joi.object().keys({
       lesson: Joi.string().regex(/^[a-f\d]{24}$/i),
-      schedule: Joi.string().regex(/^[a-f\d]{24}$/i),
+      subject: Joi.string().regex(/^[a-f\d]{24}$/i),
       teacher: Joi.string().regex(/^[a-f\d]{24}$/i),
       location: Joi.string(),
     }),

@@ -1,8 +1,9 @@
 import { User } from './users.schema';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
+import { deleteArtifacts } from 'src/utils/transform';
 
-export type TeacherInfoDocument = TeacherInfo & Document;
+export type TeacherInfoDocument = TeacherInfo & mongoose.Document;
 
 @Schema()
 export class TeacherInfo {
@@ -17,5 +18,10 @@ export class TeacherInfo {
 }
 
 const TeacherInfoSchema = SchemaFactory.createForClass(TeacherInfo);
+
+TeacherInfoSchema.set('toJSON', {
+  virtuals: true,
+  transform: (doc, ret) => deleteArtifacts('teacherInfoId', doc, ret),
+});
 
 export { TeacherInfoSchema };

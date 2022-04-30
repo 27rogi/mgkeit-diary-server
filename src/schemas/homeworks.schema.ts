@@ -2,9 +2,10 @@ import { Subject } from './subjects.schema';
 import { User } from './users.schema';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
+import * as pagination from 'mongoose-paginate-v2';
 import { deleteArtifacts } from 'src/utils/transform';
 
-export type HomeworkDocument = Homework & Document;
+export type HomeworkDocument = Homework & mongoose.Document;
 
 @Schema()
 export class Homework {
@@ -34,5 +35,7 @@ HomeworkSchema.set('toJSON', {
   virtuals: true,
   transform: (doc, ret) => deleteArtifacts('homeworkId', doc, ret),
 });
+
+HomeworkSchema.plugin(pagination);
 
 export { HomeworkSchema };
