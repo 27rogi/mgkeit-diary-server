@@ -1,8 +1,4 @@
-import {
-  Homework,
-  HomeworkDocument,
-  HomeworkSchema,
-} from './../../schemas/homeworks.schema';
+import { Homework, HomeworkDocument, HomeworkSchema } from './../../schemas/homeworks.schema';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { AnyKeys, FilterQuery, Model, Connection } from 'mongoose';
@@ -11,16 +7,14 @@ import mongoose from 'mongoose';
 
 @Injectable()
 export class HomeworkService {
-  constructor(
-    @InjectModel(Homework.name) private homeworkModel: Model<HomeworkDocument>,
-    @InjectConnection() private connection: Connection,
-  ) {}
+  constructor(@InjectModel(Homework.name) private homeworkModel: Model<HomeworkDocument>, @InjectConnection() private connection: Connection) {}
 
   async getAll(object: FilterQuery<any> = {}, page = 1, limit = 24) {
-    const homeworkPaginatedModel = this.connection.model<
-      HomeworkDocument,
-      mongoose.PaginateModel<HomeworkDocument>
-    >('Homeworks', HomeworkSchema, 'homeworks');
+    const homeworkPaginatedModel = this.connection.model<HomeworkDocument, mongoose.PaginateModel<HomeworkDocument>>(
+      'Homeworks',
+      HomeworkSchema,
+      'homeworks',
+    );
 
     return await homeworkPaginatedModel.paginate(object, {
       page: page,
@@ -37,11 +31,7 @@ export class HomeworkService {
 
   async create(body: AnyKeys<HomeworkDocument>) {
     const homework = await this.homeworkModel.findOne(body);
-    if (homework)
-      throw new HttpException(
-        'Element with these parameters already exists!',
-        HttpStatus.BAD_REQUEST,
-      );
+    if (homework) throw new HttpException('Element with these parameters already exists!', HttpStatus.BAD_REQUEST);
     return this.homeworkModel.create(body);
   }
 

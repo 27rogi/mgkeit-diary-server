@@ -1,8 +1,4 @@
-import {
-  Schedule,
-  ScheduleDocument,
-  ScheduleSchema,
-} from './../../schemas/schedules.schema';
+import { Schedule, ScheduleDocument, ScheduleSchema } from './../../schemas/schedules.schema';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { AnyKeys, FilterQuery, Model, Connection } from 'mongoose';
@@ -11,16 +7,14 @@ import mongoose from 'mongoose';
 
 @Injectable()
 export class ScheduleService {
-  constructor(
-    @InjectModel(Schedule.name) private scheduleModel: Model<ScheduleDocument>,
-    @InjectConnection() private connection: Connection,
-  ) {}
+  constructor(@InjectModel(Schedule.name) private scheduleModel: Model<ScheduleDocument>, @InjectConnection() private connection: Connection) {}
 
   async getAll(object: FilterQuery<any> = {}, page = 1, limit = 24) {
-    const schedulePaginatedModel = this.connection.model<
-      ScheduleDocument,
-      mongoose.PaginateModel<ScheduleDocument>
-    >('Schedules', ScheduleSchema, 'schedules');
+    const schedulePaginatedModel = this.connection.model<ScheduleDocument, mongoose.PaginateModel<ScheduleDocument>>(
+      'Schedules',
+      ScheduleSchema,
+      'schedules',
+    );
 
     return await schedulePaginatedModel.paginate(object, {
       page: page,
@@ -59,11 +53,7 @@ export class ScheduleService {
 
   async create(body: AnyKeys<ScheduleDocument>) {
     const schedule = await this.scheduleModel.findOne(body);
-    if (schedule)
-      throw new HttpException(
-        'Element with these parameters already exists!',
-        HttpStatus.BAD_REQUEST,
-      );
+    if (schedule) throw new HttpException('Element with these parameters already exists!', HttpStatus.BAD_REQUEST);
     return this.scheduleModel.create(body);
   }
 

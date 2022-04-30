@@ -12,10 +12,10 @@ export class Group {
   name: string;
 
   @Prop({ required: true })
-  teachStartDate: Date;
+  creationDate: Date;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
-  teacher: User;
+  owner: User;
 }
 
 const GroupSchema = SchemaFactory.createForClass(Group);

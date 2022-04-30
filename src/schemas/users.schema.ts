@@ -11,6 +11,7 @@ export class User {
   @Prop({ required: true })
   fio: string;
 
+  // для преподавателей должна быть обязательно создана группа "Преподаватели"
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Group', required: true })
   group: Group;
 
@@ -28,6 +29,13 @@ export class User {
 }
 
 const UserSchema = SchemaFactory.createForClass(User);
+
+UserSchema.virtual('owner', {
+  ref: 'Group',
+  localField: '_id',
+  foreignField: 'owner',
+  justOne: false,
+});
 
 UserSchema.set('toJSON', {
   virtuals: true,

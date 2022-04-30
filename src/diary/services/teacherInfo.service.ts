@@ -1,8 +1,4 @@
-import {
-  TeacherInfo,
-  TeacherInfoDocument,
-  TeacherInfoSchema,
-} from './../../schemas/teacherInfo.schema';
+import { TeacherInfo, TeacherInfoDocument, TeacherInfoSchema } from './../../schemas/teacherInfo.schema';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { AnyKeys, FilterQuery, Model, Connection } from 'mongoose';
@@ -17,10 +13,11 @@ export class TeacherInfoService {
   ) {}
 
   async getAll(object: FilterQuery<any> = {}, page = 1, limit = 24) {
-    const teacherInfoPaginatedModel = this.connection.model<
-      TeacherInfoDocument,
-      mongoose.PaginateModel<TeacherInfoDocument>
-    >('TeacherInfos', TeacherInfoSchema, 'teacherInfos');
+    const teacherInfoPaginatedModel = this.connection.model<TeacherInfoDocument, mongoose.PaginateModel<TeacherInfoDocument>>(
+      'TeacherInfos',
+      TeacherInfoSchema,
+      'teacherInfos',
+    );
 
     return await teacherInfoPaginatedModel.paginate(object, {
       page: page,
@@ -37,11 +34,7 @@ export class TeacherInfoService {
 
   async create(body: AnyKeys<TeacherInfoDocument>) {
     const teacherInfo = await this.teacherInfoModel.findOne(body);
-    if (teacherInfo)
-      throw new HttpException(
-        'Element with these parameters already exists!',
-        HttpStatus.BAD_REQUEST,
-      );
+    if (teacherInfo) throw new HttpException('Element with these parameters already exists!', HttpStatus.BAD_REQUEST);
     return this.teacherInfoModel.create(body);
   }
 

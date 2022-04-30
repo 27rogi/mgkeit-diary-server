@@ -7,10 +7,7 @@ import mongoose from 'mongoose';
 
 @Injectable()
 export class RoleService {
-  constructor(
-    @InjectModel(Role.name) private roleModel: Model<RoleDocument>,
-    @InjectConnection() private connection: Connection,
-  ) {}
+  constructor(@InjectModel(Role.name) private roleModel: Model<RoleDocument>, @InjectConnection() private connection: Connection) {}
 
   async getAll() {
     return await this.roleModel.find();
@@ -24,11 +21,7 @@ export class RoleService {
 
   async create(body: AnyKeys<RoleDocument>) {
     const role = await this.roleModel.findOne(body);
-    if (role)
-      throw new HttpException(
-        'Element with these parameters already exists!',
-        HttpStatus.BAD_REQUEST,
-      );
+    if (role) throw new HttpException('Element with these parameters already exists!', HttpStatus.BAD_REQUEST);
     return this.roleModel.create(body);
   }
 

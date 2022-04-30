@@ -1,8 +1,4 @@
-import {
-  Subject,
-  SubjectDocument,
-  SubjectSchema,
-} from './../../schemas/subjects.schema';
+import { Subject, SubjectDocument, SubjectSchema } from './../../schemas/subjects.schema';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { AnyKeys, FilterQuery, Model, Connection } from 'mongoose';
@@ -11,16 +7,14 @@ import mongoose from 'mongoose';
 
 @Injectable()
 export class SubjectService {
-  constructor(
-    @InjectModel(Subject.name) private subjectModel: Model<SubjectDocument>,
-    @InjectConnection() private connection: Connection,
-  ) {}
+  constructor(@InjectModel(Subject.name) private subjectModel: Model<SubjectDocument>, @InjectConnection() private connection: Connection) {}
 
   async getAll(object: FilterQuery<any> = {}, page = 1, limit = 24) {
-    const subjectPaginatedModel = this.connection.model<
-      SubjectDocument,
-      mongoose.PaginateModel<SubjectDocument>
-    >('Subjects', SubjectSchema, 'subjects');
+    const subjectPaginatedModel = this.connection.model<SubjectDocument, mongoose.PaginateModel<SubjectDocument>>(
+      'Subjects',
+      SubjectSchema,
+      'subjects',
+    );
 
     return await subjectPaginatedModel.paginate(object, {
       page: page,
@@ -37,11 +31,7 @@ export class SubjectService {
 
   async create(body: AnyKeys<SubjectDocument>) {
     const subject = await this.subjectModel.findOne(body);
-    if (subject)
-      throw new HttpException(
-        'Element with these parameters already exists!',
-        HttpStatus.BAD_REQUEST,
-      );
+    if (subject) throw new HttpException('Element with these parameters already exists!', HttpStatus.BAD_REQUEST);
     return this.subjectModel.create(body);
   }
 

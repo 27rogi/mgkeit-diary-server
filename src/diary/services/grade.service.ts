@@ -7,16 +7,10 @@ import mongoose from 'mongoose';
 
 @Injectable()
 export class GradeService {
-  constructor(
-    @InjectModel(Grade.name) private gradeModel: Model<GradeDocument>,
-    @InjectConnection() private connection: Connection,
-  ) {}
+  constructor(@InjectModel(Grade.name) private gradeModel: Model<GradeDocument>, @InjectConnection() private connection: Connection) {}
 
   async getAll(object: FilterQuery<any> = {}, page = 1, limit = 24) {
-    const gradePaginatedModel = this.connection.model<
-      GradeDocument,
-      mongoose.PaginateModel<GradeDocument>
-    >('Grades', GradeSchema, 'grades');
+    const gradePaginatedModel = this.connection.model<GradeDocument, mongoose.PaginateModel<GradeDocument>>('Grades', GradeSchema, 'grades');
 
     return await gradePaginatedModel.paginate(object, {
       page: page,
@@ -33,11 +27,18 @@ export class GradeService {
 
   async create(body: AnyKeys<GradeDocument>) {
     const grade = await this.gradeModel.findOne(body);
-    if (grade)
-      throw new HttpException(
-        'Element with these parameters already exists!',
-        HttpStatus.BAD_REQUEST,
-      );
+    if (grade) {
+      throw new HttpException('Element with these parameters already exists!', HttpStatus.BAD_REQUEST);
+    }
+
+    if (!(await this.gradeModel.findById(body.student))) {
+      throw new HttpException('Student with this `id` not found!', HttpStatus.NOT_FOUND);
+    }
+
+    if (!(await this.gradeModel.findById(body.teacher))) {
+      throw new HttpException('Teacher with this `id` not found!', HttpStatus.NOT_FOUND);
+    }
+
     return this.gradeModel.create(body);
   }
 

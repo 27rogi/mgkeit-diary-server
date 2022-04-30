@@ -7,16 +7,10 @@ import mongoose from 'mongoose';
 
 @Injectable()
 export class BellService {
-  constructor(
-    @InjectModel(Bell.name) private bellModel: Model<BellDocument>,
-    @InjectConnection() private connection: Connection,
-  ) {}
+  constructor(@InjectModel(Bell.name) private bellModel: Model<BellDocument>, @InjectConnection() private connection: Connection) {}
 
   async getAll(object: FilterQuery<any> = {}, page = 1, limit = 24) {
-    const bellPaginatedModel = this.connection.model<
-      BellDocument,
-      mongoose.PaginateModel<BellDocument>
-    >('Bells', BellSchema, 'bells');
+    const bellPaginatedModel = this.connection.model<BellDocument, mongoose.PaginateModel<BellDocument>>('Bells', BellSchema, 'bells');
 
     return await bellPaginatedModel.paginate(object, {
       page: page,
@@ -33,11 +27,7 @@ export class BellService {
 
   async create(body: AnyKeys<BellDocument>) {
     const bell = await this.bellModel.findOne(body);
-    if (bell)
-      throw new HttpException(
-        'Element with these parameters already exists!',
-        HttpStatus.BAD_REQUEST,
-      );
+    if (bell) throw new HttpException('Element with these parameters already exists!', HttpStatus.BAD_REQUEST);
     return this.bellModel.create(body);
   }
 
