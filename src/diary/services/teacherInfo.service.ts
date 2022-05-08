@@ -27,7 +27,7 @@ export class TeacherInfoService {
   }
 
   async getOne(id) {
-    const teacherInfo = await this.teacherInfoModel.findById(id).exec();
+    const teacherInfo = await this.teacherInfoModel.findById(id).populate('teacher').exec();
     if (!teacherInfo) throw new HttpException('Not found!', HttpStatus.NOT_FOUND);
     return teacherInfo;
   }

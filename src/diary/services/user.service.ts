@@ -1,10 +1,11 @@
-import { User, UserDocument } from '../../schemas/users.schema';
+import { User, UserDocument, UserSchema } from '../../schemas/users.schema';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { AnyKeys, FilterQuery, Model } from 'mongoose';
+import { InjectConnection, InjectModel } from '@nestjs/mongoose';
+import { AnyKeys, FilterQuery, Model, Connection, PaginateModel } from 'mongoose';
 import faker from '@faker-js/faker';
 import { Group, GroupDocument } from 'src/schemas/groups.schema';
 import { Role, RoleDocument } from 'src/schemas/roles.schema';
+import { paginationLabels } from 'src/utils/transform';
 
 @Injectable()
 export class UserService {
@@ -12,13 +13,21 @@ export class UserService {
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     @InjectModel(Group.name) private groupModel: Model<GroupDocument>,
     @InjectModel(Role.name) private roleModel: Model<RoleDocument>,
+    @InjectConnection() private connection: Connection,
   ) {}
 
-  async getAll(): Promise<User[]> {
-    return this.userModel.find().populate('group').exec();
+  async getAll(object: FilterQuery<any> = {}, populate = null, page = 1, limit = 24) {
+    const userPaginatedModel = this.connection.model<UserDocument, PaginateModel<UserDocument>>('Users', UserSchema, 'users');
+
+    return await userPaginatedModel.paginate(object, {
+      populate: populate,
+      page: page,
+      limit: limit,
+      customLabels: paginationLabels,
+    });
   }
 
-  async getOne(details: FilterQuery<User> = {}, detailed = false): Promise<User> {
+  async getOne(details: FilterQuery<User> = {}, detailed = false) {
     if (detailed) return this.userModel.findOne(details).populate(['group', 'role', 'owner']).exec();
     else return this.userModel.findOne(details).exec();
   }

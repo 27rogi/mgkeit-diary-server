@@ -2,6 +2,7 @@ import { Role } from './roles.schema';
 import { Group } from './groups.schema';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
+import * as pagination from 'mongoose-paginate-v2';
 import { deleteArtifacts } from 'src/utils/transform';
 
 export type UserDocument = User & mongoose.Document;
@@ -37,9 +38,18 @@ UserSchema.virtual('owner', {
   justOne: false,
 });
 
+UserSchema.virtual('teacherInfo', {
+  ref: 'TeacherInfo',
+  localField: '_id',
+  foreignField: 'teacher',
+  justOne: true,
+});
+
 UserSchema.set('toJSON', {
   virtuals: true,
   transform: (doc, ret) => deleteArtifacts('userId', doc, ret),
 });
+
+UserSchema.plugin(pagination);
 
 export { UserSchema };

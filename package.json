@@ -27,6 +27,7 @@
     "@nestjs/mongoose": "^9.0.3",
     "@nestjs/passport": "^8.2.1",
     "@nestjs/platform-express": "^8.0.0",
+    "cors": "^2.8.5",
     "crypto": "^1.0.1",
     "helmet": "^5.0.2",
     "joi": "^17.6.0",

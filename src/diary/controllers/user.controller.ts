@@ -1,6 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 import { PermissionsGuard } from 'src/auth/guards/permissions.guard';
+import options from 'src/utils/options';
 import { UsePermissions } from 'src/utils/permissions.decorator';
 import { JoiValidationPipe } from 'src/utils/validation';
 import { userValidations } from 'src/validations/user.validation';
@@ -11,7 +12,7 @@ export class UserController {
   constructor(private userService: UserService) {}
 
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @UsePermissions('getUser')
+  @UsePermissions('getUsers')
   @Get()
   getAll(@Query(new JoiValidationPipe(userValidations.getAll)) query) {
     return this.userService.getAll();
@@ -19,9 +20,23 @@ export class UserController {
 
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @UsePermissions('getUsers')
+  @Get('/teachers')
+  getTeachers(@Query(new JoiValidationPipe(userValidations.getAll)) query) {
+    return this.userService.getAll(
+      {
+        role: options.defaultTeacherRole,
+      },
+      ['owner', 'role', 'group', 'teacherInfo'],
+      query.page,
+      query.limit,
+    );
+  }
+
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UsePermissions('getUser')
   @Get(':id')
   getOne(@Param(new JoiValidationPipe(userValidations.get)) params) {
-    return this.userService.getOne(params.id);
+    return this.userService.getOne({ _id: params.id });
   }
 
   @UseGuards(JwtAuthGuard, PermissionsGuard)

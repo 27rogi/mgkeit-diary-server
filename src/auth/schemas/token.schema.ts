@@ -12,6 +12,9 @@ export class Token {
 
   @Prop({ required: true, trim: true })
   token: string;
+
+  @Prop({ required: true, trim: true })
+  type: 'access' | 'refresh';
 }
 
 export const TokenSchema = SchemaFactory.createForClass(Token);

@@ -10,8 +10,6 @@ import { UsePermissions } from 'src/utils/permissions.decorator';
 export class GroupController {
   constructor(private groupService: GroupService) {}
 
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @UsePermissions('getGroups')
   @Get()
   getAll(@Query(new JoiValidationPipe(groupValidations.getAll)) query) {
     return this.groupService.getAll({}, query.page, query.limit);

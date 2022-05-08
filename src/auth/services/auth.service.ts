@@ -41,6 +41,20 @@ export class AuthService {
     return this.generateTokens(user);
   }
 
+  async logout(user) {
+    const refreshToken = await this.tokenModel.findOne({ user: user._id, type: 'refresh' });
+    const accessToken = await this.tokenModel.findOne({ user: user._id, type: 'access' });
+
+    if (!refreshToken && !accessToken) {
+      throw new HttpException('You already logged out!', HttpStatus.BAD_REQUEST);
+    }
+
+    if (accessToken) await accessToken.remove();
+    if (refreshToken) await refreshToken.remove();
+
+    return { result: 'Logged out.' };
+  }
+
   async refreshTokens(token: string) {
     try {
       this.jwtService.verify(token, {
@@ -60,29 +74,40 @@ export class AuthService {
   }
 
   async generateTokens(user: any) {
-    if (user) {
-      const payload = { sub: user._id, group: user.group };
-      const refreshToken = this.jwtService.sign(
-        { ...payload, type: 'refresh' },
-        {
-          secret: options.jwtRefreshKey,
-          expiresIn: '30d',
-        },
-      );
+    if (!user) throw new HttpException('This user does not exist!', HttpStatus.UNAUTHORIZED);
 
-      const tokenDoc = await this.tokenModel.findOne({ user: user._id });
-      if (tokenDoc) await tokenDoc.remove();
+    const payload = { sub: user._id, group: user.group };
 
-      await this.tokenModel.create({
-        user: user._id,
-        token: refreshToken,
-      });
+    const accessToken = this.jwtService.sign({ ...payload, type: 'access' });
+    const refreshToken = this.jwtService.sign(
+      { ...payload, type: 'refresh' },
+      {
+        secret: options.jwtRefreshKey,
+        expiresIn: '30d',
+      },
+    );
 
-      return {
-        access_token: this.jwtService.sign({ ...payload, type: 'access' }),
-        refresh_token: refreshToken,
-      };
-    }
-    return null;
+    const accessTokenDoc = await this.tokenModel.findOne({ user: user._id, type: 'access' });
+    if (accessTokenDoc) await accessTokenDoc.remove();
+
+    const refreshTokenDoc = await this.tokenModel.findOne({ user: user._id, type: 'refresh' });
+    if (refreshTokenDoc) await refreshTokenDoc.remove();
+
+    await this.tokenModel.create({
+      user: user._id,
+      token: accessToken,
+      type: 'access',
+    });
+
+    await this.tokenModel.create({
+      user: user._id,
+      token: refreshToken,
+      type: 'refresh',
+    });
+
+    return {
+      access_token: accessToken,
+      refresh_token: refreshToken,
+    };
   }
 }
