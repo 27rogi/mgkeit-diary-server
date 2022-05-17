@@ -1,4 +1,5 @@
 import { Controller, Post, UseGuards, Body, Get, Req } from '@nestjs/common';
+import { hashPassword } from 'src/utils/transform';
 import { JoiValidationPipe } from 'src/utils/validation';
 import { JwtAuthGuard } from '../guards/jwt.guard';
 import { AuthService } from '../services/auth.service';
@@ -15,7 +16,7 @@ export class AuthController {
 
   @Post('login')
   async login(@Body(new JoiValidationPipe(authValidations.login)) body) {
-    return this.authService.login(body.fio, body.group, body.password);
+    return this.authService.login(body.fio, body.group, hashPassword(body.password));
   }
 
   @Post('register')

@@ -8,33 +8,37 @@ import { UserService } from 'src/diary/services/user.service';
 import { User } from 'src/schemas/users.schema';
 import { hashPassword } from 'src/utils/transform';
 import options from 'src/utils/options';
+import { RoleService } from 'src/diary/services/role.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectModel(Token.name) private tokenModel: Model<TokenDocument>,
+    private rolesService: RoleService,
     private usersService: UserService,
     private jwtService: JwtService,
   ) {}
 
   async findUser(fio: string, group: string, password: string) {
-    const user: User | null = await this.usersService.getOne({ fio, group, password });
+    const user = await this.usersService.getOne({ fio, group, password });
     return user;
   }
 
   async register(body: any) {
-    const { fio, group, password } = body;
-    const user = await this.findUser(fio, group, password);
+    body.password = hashPassword(body.password);
+
+    const user = await this.findUser(body.fio, body.group, body.password);
     if (user) {
       throw new HttpException('User with this details already exists!', HttpStatus.BAD_REQUEST);
     }
 
-    const newUser = await this.usersService.create({ ...body, password: hashPassword(password), role: options.defaultRole });
-    return this.login(newUser.fio, group, password);
+    const defaultRole = await this.rolesService.getRoleWithPermissions(['defaultRole']);
+    const newUser = await this.usersService.create({ ...body, role: defaultRole });
+    return await this.login(newUser.fio, body.group, body.password);
   }
 
   async login(fio: string, group: string, password: string) {
-    const user = await this.findUser(fio, group, hashPassword(password));
+    const user = await this.findUser(fio, group, password);
     if (!user) {
       throw new HttpException('User does not exist!', HttpStatus.BAD_REQUEST);
     }

@@ -15,6 +15,13 @@ export const gradeValidations = {
       page: Joi.number().integer(),
     }),
   },
+  getByGroup: {
+    params: Joi.object().keys({
+      id: Joi.string()
+        .regex(/^[a-f\d]{24}$/i)
+        .required(),
+    }),
+  },
   create: {
     body: Joi.object().keys({
       student: Joi.string()
@@ -23,7 +30,7 @@ export const gradeValidations = {
       teacher: Joi.string()
         .regex(/^[a-f\d]{24}$/i)
         .required(),
-      lesson: Joi.string()
+      subject: Joi.string()
         .regex(/^[a-f\d]{24}$/i)
         .required(),
       reason: Joi.string().required(),
@@ -40,7 +47,7 @@ export const gradeValidations = {
     body: Joi.object().keys({
       student: Joi.string().regex(/^[a-f\d]{24}$/i),
       teacher: Joi.string().regex(/^[a-f\d]{24}$/i),
-      lesson: Joi.string().regex(/^[a-f\d]{24}$/i),
+      subject: Joi.string().regex(/^[a-f\d]{24}$/i),
       reason: Joi.string(),
       weight: Joi.number(),
       grade: Joi.number().min(1).max(5),

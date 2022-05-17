@@ -17,6 +17,7 @@ export class HomeworkService {
     );
 
     return await homeworkPaginatedModel.paginate(object, {
+      populate: ['teacher', 'group', 'subject'],
       page: page,
       limit: limit,
       customLabels: paginationLabels,

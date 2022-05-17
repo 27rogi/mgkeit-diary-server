@@ -1,3 +1,4 @@
+import { Group } from 'src/schemas/groups.schema';
 import { Subject } from './subjects.schema';
 import { User } from './users.schema';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
@@ -27,6 +28,9 @@ export class Homework {
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true })
   teacher: User;
+
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Group', required: true })
+  group: Group;
 }
 
 const HomeworkSchema = SchemaFactory.createForClass(Homework);

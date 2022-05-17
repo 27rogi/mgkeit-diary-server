@@ -11,35 +11,35 @@ export class TeacherInfoController {
   constructor(private teacherInfoService: TeacherInfoService) {}
 
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @UsePermissions('getAllTeacherInfo')
+  @UsePermissions('teachers.get')
   @Get()
   getAll(@Query(new JoiValidationPipe(teacherInfoValidations.getAll)) query) {
     return this.teacherInfoService.getAll({}, query.page, query.limit);
   }
 
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @UsePermissions('getTeacherInfo')
+  @UsePermissions('teachers.get')
   @Get(':id')
   getOne(@Param(new JoiValidationPipe(teacherInfoValidations.get)) params) {
     return this.teacherInfoService.getOne(params.id);
   }
 
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @UsePermissions('createTeacherInfo')
+  @UsePermissions('teachers.manage')
   @Post()
   create(@Body(new JoiValidationPipe(teacherInfoValidations.create)) body) {
     return this.teacherInfoService.create(body);
   }
 
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @UsePermissions('patchTeacherInfo')
+  @UsePermissions('teachers.manage')
   @Patch(':id')
   update(@Param(new JoiValidationPipe(teacherInfoValidations.update)) params, @Body(new JoiValidationPipe(teacherInfoValidations.update)) body) {
     return this.teacherInfoService.update(params.id, body);
   }
 
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @UsePermissions('deleteTeacherInfo')
+  @UsePermissions('teachers.manage')
   @Delete(':id')
   delete(@Param(new JoiValidationPipe(teacherInfoValidations.delete)) params) {
     return this.teacherInfoService.delete(params.id);

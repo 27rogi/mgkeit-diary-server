@@ -11,35 +11,45 @@ export class HomeworkController {
   constructor(private homeworkService: HomeworkService) {}
 
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @UsePermissions('getHomeworks')
+  @UsePermissions('homeworks.get')
   @Get()
   getAll(@Query(new JoiValidationPipe(homeworkValidations.getAll)) query) {
     return this.homeworkService.getAll({}, query.page, query.limit);
   }
 
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @UsePermissions('getHomework')
+  @UsePermissions('homeworks.byGroup')
+  @Get('/group/:id')
+  getByGroup(
+    @Param(new JoiValidationPipe(homeworkValidations.getByGroup)) params,
+    @Query(new JoiValidationPipe(homeworkValidations.getAll)) query,
+  ) {
+    return this.homeworkService.getAll({ group: params.id }, query.page, query.limit);
+  }
+
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UsePermissions('homeworks.get')
   @Get(':id')
   getOne(@Param(new JoiValidationPipe(homeworkValidations.get)) params) {
     return this.homeworkService.getOne(params.id);
   }
 
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @UsePermissions('createHomework')
+  @UsePermissions('homeworks.manage')
   @Post()
   create(@Body(new JoiValidationPipe(homeworkValidations.create)) body) {
     return this.homeworkService.create(body);
   }
 
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @UsePermissions('patchHomework')
+  @UsePermissions('homeworks.manage')
   @Patch(':id')
   update(@Param(new JoiValidationPipe(homeworkValidations.update)) params, @Body(new JoiValidationPipe(homeworkValidations.update)) body) {
     return this.homeworkService.update(params.id, body);
   }
 
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @UsePermissions('deleteHomework')
+  @UsePermissions('homeworks.manage')
   @Delete(':id')
   delete(@Param(new JoiValidationPipe(homeworkValidations.delete)) params) {
     return this.homeworkService.delete(params.id);

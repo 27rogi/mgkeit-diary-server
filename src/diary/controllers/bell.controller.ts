@@ -11,35 +11,35 @@ export class BellController {
   constructor(private bellService: BellService) {}
 
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @UsePermissions('getBell')
+  @UsePermissions('bells.get')
   @Get()
   getAll(@Query(new JoiValidationPipe(bellValidations.getAll)) query) {
     return this.bellService.getAll({}, query.page, query.limit);
   }
 
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @UsePermissions('getBells')
+  @UsePermissions('bells.get')
   @Get(':id')
   getOne(@Param(new JoiValidationPipe(bellValidations.get)) params) {
     return this.bellService.getOne(params.id);
   }
 
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @UsePermissions('createBell')
+  @UsePermissions('bells.create')
   @Post()
   create(@Body(new JoiValidationPipe(bellValidations.create)) body) {
     return this.bellService.create(body);
   }
 
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @UsePermissions('patchBell')
+  @UsePermissions('bells.update')
   @Patch(':id')
   update(@Param(new JoiValidationPipe(bellValidations.update)) params, @Body(new JoiValidationPipe(bellValidations.update)) body) {
     return this.bellService.update(params.id, body);
   }
 
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @UsePermissions('deleteBell')
+  @UsePermissions('bells.delete')
   @Delete(':id')
   delete(@Param(new JoiValidationPipe(bellValidations.delete)) params) {
     return this.bellService.delete(params.id);

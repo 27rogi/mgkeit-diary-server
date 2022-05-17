@@ -17,33 +17,34 @@ export class ScheduleService {
     );
 
     return await schedulePaginatedModel.paginate(object, {
+      populate: ['group'],
       page: page,
       limit: limit,
       customLabels: paginationLabels,
     });
   }
 
-  async getOne(id, detailed) {
-    const schedule = this.scheduleModel.findById(id);
-    if (detailed === 'true') {
-      schedule.populate({
-        path: 'days',
-        model: 'ScheduleDays',
-        populate: {
-          path: 'lessons',
-          model: 'Lesson',
-          populate: [
-            {
-              path: 'replacement',
-              model: 'Replacement',
-              populate: ['subject', 'teacher'],
-            },
-            'subject',
-            'bell',
-            'teacher',
-          ],
+  async getOne(object: FilterQuery<any>, detailed) {
+    const schedule = this.scheduleModel.findOne(object);
+    if (detailed) {
+      schedule.populate([
+        'group',
+        {
+          path: 'days',
+          populate: {
+            path: 'lessons',
+            populate: [
+              'subject',
+              'bell',
+              'teacher',
+              {
+                path: 'replacement',
+                populate: ['subject', 'teacher'],
+              },
+            ],
+          },
         },
-      });
+      ]);
     }
 
     const res = await schedule.exec();

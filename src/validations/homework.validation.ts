@@ -15,6 +15,13 @@ export const homeworkValidations = {
       page: Joi.number().integer(),
     }),
   },
+  getByGroup: {
+    params: Joi.object().keys({
+      id: Joi.string()
+        .regex(/^[a-f\d]{24}$/i)
+        .required(),
+    }),
+  },
   create: {
     body: Joi.object().keys({
       subject: Joi.string()
@@ -22,8 +29,11 @@ export const homeworkValidations = {
         .required(),
       mission: Joi.string().required(),
       material: Joi.string().required(),
-      dealine: Joi.date().required(),
+      deadline: Joi.date().required(),
       teacher: Joi.string()
+        .regex(/^[a-f\d]{24}$/i)
+        .required(),
+      group: Joi.string()
         .regex(/^[a-f\d]{24}$/i)
         .required(),
     }),
@@ -38,8 +48,9 @@ export const homeworkValidations = {
       subject: Joi.string().regex(/^[a-f\d]{24}$/i),
       mission: Joi.string(),
       material: Joi.string(),
-      dealine: Joi.date(),
+      deadline: Joi.date(),
       teacher: Joi.string().regex(/^[a-f\d]{24}$/i),
+      group: Joi.string().regex(/^[a-f\d]{24}$/i),
     }),
   },
   delete: {

@@ -16,28 +16,28 @@ export class GroupController {
   }
 
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @UsePermissions('getGroup')
+  @UsePermissions('groups.get')
   @Get(':id')
   getOne(@Param(new JoiValidationPipe(groupValidations.get)) params) {
     return this.groupService.getOne(params.id);
   }
 
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @UsePermissions('createGroup')
+  @UsePermissions('groups.manage')
   @Post()
   create(@Body(new JoiValidationPipe(groupValidations.create)) body) {
     return this.groupService.create(body);
   }
 
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @UsePermissions('patchGroup')
+  @UsePermissions('groups.manage')
   @Patch(':id')
   update(@Param(new JoiValidationPipe(groupValidations.update)) params, @Body(new JoiValidationPipe(groupValidations.update)) body) {
     return this.groupService.update(params.id, body);
   }
 
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @UsePermissions('deleteGroup')
+  @UsePermissions('groups.manage')
   @Delete(':id')
   delete(@Param(new JoiValidationPipe(groupValidations.delete)) params) {
     return this.groupService.delete(params.id);

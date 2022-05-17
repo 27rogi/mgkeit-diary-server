@@ -25,6 +25,13 @@ GroupSchema.set('toJSON', {
   transform: (doc, ret) => deleteArtifacts('groupId', doc, ret),
 });
 
+GroupSchema.virtual('members', {
+  ref: 'Users',
+  localField: '_id',
+  foreignField: 'group',
+  justOne: false,
+});
+
 GroupSchema.plugin(pagination);
 
 export { GroupSchema };

@@ -11,35 +11,35 @@ export class RoleController {
   constructor(private roleService: RoleService) {}
 
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @UsePermissions('getRoles')
+  @UsePermissions('roles.get')
   @Get()
   getAll(@Query(new JoiValidationPipe(roleValidations.getAll)) query) {
     return this.roleService.getAll();
   }
 
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @UsePermissions('getRole')
+  @UsePermissions('roles.get')
   @Get(':id')
   getOne(@Param(new JoiValidationPipe(roleValidations.get)) params) {
     return this.roleService.getOne(params.id);
   }
 
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @UsePermissions('createRole')
+  @UsePermissions('roles.manage')
   @Post()
   create(@Body(new JoiValidationPipe(roleValidations.create)) body) {
     return this.roleService.create(body);
   }
 
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @UsePermissions('patchRole')
+  @UsePermissions('roles.manage')
   @Patch(':id')
   update(@Param(new JoiValidationPipe(roleValidations.update)) params, @Body(new JoiValidationPipe(roleValidations.update)) body) {
     return this.roleService.update(params.id, body);
   }
 
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @UsePermissions('deleteRole')
+  @UsePermissions('roles.manage')
   @Delete(':id')
   delete(@Param(new JoiValidationPipe(roleValidations.delete)) params) {
     return this.roleService.delete(params.id);

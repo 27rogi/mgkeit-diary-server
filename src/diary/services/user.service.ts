@@ -1,3 +1,4 @@
+import { hashPassword } from './../../utils/transform';
 import { User, UserDocument, UserSchema } from '../../schemas/users.schema';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
@@ -6,25 +7,45 @@ import faker from '@faker-js/faker';
 import { Group, GroupDocument } from 'src/schemas/groups.schema';
 import { Role, RoleDocument } from 'src/schemas/roles.schema';
 import { paginationLabels } from 'src/utils/transform';
+import { RoleService } from './role.service';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
-    @InjectModel(Group.name) private groupModel: Model<GroupDocument>,
-    @InjectModel(Role.name) private roleModel: Model<RoleDocument>,
     @InjectConnection() private connection: Connection,
+    private rolesService: RoleService,
   ) {}
 
-  async getAll(object: FilterQuery<any> = {}, populate = null, page = 1, limit = 24) {
+  async getAll(object: FilterQuery<any> = {}, populate = null, sort = null, page = 1, limit = 24) {
     const userPaginatedModel = this.connection.model<UserDocument, PaginateModel<UserDocument>>('Users', UserSchema, 'users');
 
     return await userPaginatedModel.paginate(object, {
-      populate: populate,
-      page: page,
-      limit: limit,
+      populate,
+      sort,
+      page,
+      limit,
       customLabels: paginationLabels,
     });
+  }
+
+  async getByPermissions(permissions: string[], object: FilterQuery<any> = {}, populate = null, sort = null, page = 1, limit = 24) {
+    const rolesWithPermissions = await this.rolesService.getRolesWithPermissions(permissions);
+    const userPaginatedModel = this.connection.model<UserDocument, PaginateModel<UserDocument>>('Users', UserSchema, 'users');
+
+    return await userPaginatedModel.paginate(
+      {
+        ...object,
+        role: rolesWithPermissions,
+      },
+      {
+        populate,
+        sort,
+        page,
+        limit,
+        customLabels: paginationLabels,
+      },
+    );
   }
 
   async getOne(details: FilterQuery<User> = {}, detailed = false) {
@@ -38,9 +59,10 @@ export class UserService {
     return this.userModel.create(body);
   }
 
-  async update(id, body: AnyKeys<RoleDocument>) {
+  async update(id, body: AnyKeys<UserDocument>) {
     const user = await this.userModel.findById(id);
     if (!user) throw new HttpException('Not found!', HttpStatus.NOT_FOUND);
+    if (body.password) Object.defineProperty(body, 'password', { value: hashPassword(body.password) });
     Object.assign(user, body);
     return await user.save();
   }

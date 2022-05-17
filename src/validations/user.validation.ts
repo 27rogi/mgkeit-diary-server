@@ -10,7 +10,7 @@ export const userValidations = {
   },
   getAll: {
     query: Joi.object().keys({
-      sortBy: Joi.string(),
+      sort: Joi.string(),
       limit: Joi.number().integer(),
       page: Joi.number().integer(),
     }),
@@ -21,7 +21,7 @@ export const userValidations = {
       group: Joi.string()
         .regex(/^[a-f\d]{24}$/i)
         .required(),
-      specialty: Joi.date().required(),
+      birthday: Joi.date().required(),
       address: Joi.string().required(),
       role: Joi.string()
         .regex(/^[a-f\d]{24}$/i)
@@ -38,7 +38,7 @@ export const userValidations = {
     body: Joi.object().keys({
       fio: Joi.string(),
       group: Joi.string().regex(/^[a-f\d]{24}$/i),
-      specialty: Joi.date(),
+      birthday: Joi.date(),
       address: Joi.string(),
       role: Joi.string().regex(/^[a-f\d]{24}$/i),
       password: Joi.string(),

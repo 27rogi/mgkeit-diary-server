@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
+import * as pagination from 'mongoose-paginate-v2';
 import { deleteArtifacts } from 'src/utils/transform';
 
 export type RoleDocument = Role & mongoose.Document;
@@ -19,5 +20,7 @@ RoleSchema.set('toJSON', {
   virtuals: true,
   transform: (doc, ret) => deleteArtifacts('roleId', doc, ret),
 });
+
+RoleSchema.plugin(pagination);
 
 export { RoleSchema };

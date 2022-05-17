@@ -13,6 +13,7 @@ export class GradeService {
     const gradePaginatedModel = this.connection.model<GradeDocument, mongoose.PaginateModel<GradeDocument>>('Grades', GradeSchema, 'grades');
 
     return await gradePaginatedModel.paginate(object, {
+      populate: ['teacher', 'student', 'subject'],
       page: page,
       limit: limit,
       customLabels: paginationLabels,
@@ -20,7 +21,7 @@ export class GradeService {
   }
 
   async getOne(id) {
-    const grade = await this.gradeModel.findById(id).populate('lesson').exec();
+    const grade = await this.gradeModel.findById(id).populate(['teacher', 'student', 'subject']).exec();
     if (!grade) throw new HttpException('Not found!', HttpStatus.NOT_FOUND);
     return grade;
   }
@@ -29,14 +30,6 @@ export class GradeService {
     const grade = await this.gradeModel.findOne(body);
     if (grade) {
       throw new HttpException('Element with these parameters already exists!', HttpStatus.BAD_REQUEST);
-    }
-
-    if (!(await this.gradeModel.findById(body.student))) {
-      throw new HttpException('Student with this `id` not found!', HttpStatus.NOT_FOUND);
-    }
-
-    if (!(await this.gradeModel.findById(body.teacher))) {
-      throw new HttpException('Teacher with this `id` not found!', HttpStatus.NOT_FOUND);
     }
 
     return this.gradeModel.create(body);

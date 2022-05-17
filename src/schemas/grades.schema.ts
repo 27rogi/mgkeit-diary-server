@@ -1,9 +1,9 @@
+import { Subject } from './subjects.schema';
 import { User } from './users.schema';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
 import * as pagination from 'mongoose-paginate-v2';
 import { deleteArtifacts } from 'src/utils/transform';
-import { Lesson } from './schedules.schema';
 
 export type GradeDocument = Grade & mongoose.Document;
 
@@ -15,8 +15,8 @@ export class Grade {
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true })
   teacher: User;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Lesson', required: true })
-  lesson: Lesson;
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Subject', required: true })
+  subject: Subject;
 
   @Prop({ required: true })
   reason: string;

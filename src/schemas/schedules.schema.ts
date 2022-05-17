@@ -6,11 +6,33 @@ import * as pagination from 'mongoose-paginate-v2';
 import { deleteArtifacts } from 'src/utils/transform';
 import { Subject, SubjectDocument, SubjectSchema } from './subjects.schema';
 import { User } from './users.schema';
-import { ReplacementSchema } from './replacements.schema';
+import { NullableType } from 'joi';
 
 export type ScheduleDocument = Schedule & mongoose.Document;
 
-@Schema()
+@Schema({ _id: false })
+export class Replacement {
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Subject',
+    required: true,
+  })
+  subject: Subject;
+
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true })
+  teacher: User;
+
+  @Prop({ required: true })
+  location: string;
+}
+
+const ReplacementSchema = SchemaFactory.createForClass(Replacement);
+
+ReplacementSchema.set('toJSON', {
+  virtuals: true,
+});
+
+@Schema({ _id: false })
 export class Lesson {
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
@@ -27,16 +49,12 @@ export class Lesson {
 
   @Prop({ required: true })
   location: string;
+
+  @Prop({ type: null || ReplacementSchema })
+  replacement: null | Replacement;
 }
 
 const LessonSchema = SchemaFactory.createForClass(Lesson);
-
-LessonSchema.virtual('replacement', {
-  ref: 'Replacement',
-  localField: '_id',
-  foreignField: 'lesson',
-  justOne: true,
-});
 
 LessonSchema.set('toJSON', {
   virtuals: true,

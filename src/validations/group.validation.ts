@@ -18,8 +18,8 @@ export const groupValidations = {
   create: {
     body: Joi.object().keys({
       name: Joi.string().required(),
-      teachStartDate: Joi.date().required(),
-      teacher: Joi.string()
+      creationDate: Joi.date().required(),
+      owner: Joi.string()
         .regex(/^[a-f\d]{24}$/i)
         .required(),
     }),
@@ -32,8 +32,8 @@ export const groupValidations = {
     }),
     body: Joi.object().keys({
       name: Joi.string(),
-      teachStartDate: Joi.date(),
-      teacher: Joi.string().regex(/^[a-f\d]{24}$/i),
+      creationDate: Joi.date(),
+      owner: Joi.string().regex(/^[a-f\d]{24}$/i),
     }),
   },
   delete: {

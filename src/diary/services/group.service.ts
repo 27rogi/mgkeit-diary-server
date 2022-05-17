@@ -13,6 +13,7 @@ export class GroupService {
     const groupPaginatedModel = this.connection.model<GroupDocument, mongoose.PaginateModel<GroupDocument>>('Groups', GroupSchema, 'groups');
 
     return await groupPaginatedModel.paginate(object, {
+      populate: 'owner',
       page: page,
       limit: limit,
       customLabels: paginationLabels,

@@ -1,7 +1,7 @@
 import { Role, RoleDocument, RoleSchema } from './../../schemas/roles.schema';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
-import { AnyKeys, FilterQuery, Model, Connection } from 'mongoose';
+import { AnyKeys, FilterQuery, Model, Connection, PaginateModel } from 'mongoose';
 import { paginationLabels } from 'src/utils/transform';
 import mongoose from 'mongoose';
 
@@ -9,8 +9,23 @@ import mongoose from 'mongoose';
 export class RoleService {
   constructor(@InjectModel(Role.name) private roleModel: Model<RoleDocument>, @InjectConnection() private connection: Connection) {}
 
-  async getAll() {
-    return await this.roleModel.find();
+  async getRolesWithPermissions(permissions: string[], select = 'roleId') {
+    return await this.roleModel.find({ permissions: { $in: permissions } }).select(select);
+  }
+
+  async getRoleWithPermissions(permissions: string[], select = 'roleId') {
+    return await this.roleModel.findOne({ permissions: { $in: permissions } }).select(select);
+  }
+
+  async getAll(object: FilterQuery<any> = {}, populate = null, page = 1, limit = 24) {
+    const rolePaginatedModel = this.connection.model<RoleDocument, PaginateModel<RoleDocument>>('Roles', RoleSchema, 'roles');
+
+    return await rolePaginatedModel.paginate(object, {
+      populate: populate,
+      page: page,
+      limit: limit,
+      customLabels: paginationLabels,
+    });
   }
 
   async getOne(id) {
